@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+
+    <div id="smsContainer">
+        
+    </div>
+
+    
+
+    <script type="module">
+        // Import the functions you need from the SDKs you need
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.5.0/firebase-app.js";
+        import { getDatabase, ref, get, set, onValue } from "https://www.gstatic.com/firebasejs/10.5.0/firebase-database.js";
+        // TODO: Add SDKs for Firebase products that you want to use
+        // https://firebase.google.com/docs/web/setup#available-libraries
+      
+        // Your web app's Firebase configuration
+        const firebaseConfig = {
+          apiKey: "AIzaSyD9OWx4sOkXzh7_V_V4llDSkxJ7SP1Uh0s",
+          authDomain: "trydb-f963b.firebaseapp.com",
+          projectId: "trydb-f963b",
+          storageBucket: "trydb-f963b.appspot.com",
+          messagingSenderId: "548490302104",
+          appId: "1:548490302104:web:3e875c0dd82069d985b6ed"
+        };
+      
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app);
+
+        // Reference to the specific location in the database
+        const dbSmsListRef = ref(db, 'dbSmsList');
+
+        // Function to create the SMS elements
+        function createSmsElement(content, sender, time) {
+            const smsDiv = document.createElement('div');
+            smsDiv.className = 'sms';
+            const contentP = document.createElement('p');
+            contentP.textContent = `Content: ${content}`;
+            const senderP = document.createElement('p');
+            senderP.textContent = `Sender: ${sender}`;
+            const timeP = document.createElement('p');
+            timeP.textContent = `Time: ${time}`;
+            
+            smsDiv.appendChild(contentP);
+            smsDiv.appendChild(senderP);
+            smsDiv.appendChild(timeP);
+            
+            return smsDiv;
+        }
+
+        // Function to populate SMS elements for all senders
+        function populateSmsElements() {
+            onValue(dbSmsListRef, (snapshot) => {
+                // Clear the existing content in case this is called multiple times
+                const smsContainer = document.getElementById('smsContainer');
+                smsContainer.innerHTML = '';
+
+                snapshot.forEach((senderSnapshot) => {
+                    const senderData = senderSnapshot.val();
+                    const content = senderData.content;
+                    const sender = senderData.sender;
+                    const time = senderData.time;
+
+                    const smsElement = createSmsElement(content, sender, time);
+                    smsContainer.appendChild(smsElement);
+                });
+            });
+        }
+
+        // Call the function to populate the SMS elements
+        populateSmsElements();
+      
+    </script>
+</body>
+
+
+
+</html>
